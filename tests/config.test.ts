@@ -1,8 +1,8 @@
 import { loadAppConfig } from "../config.ts"
 import { assertExists } from "../deps.ts"
 
-Deno.test("read config", () => {
-    const config = loadAppConfig()
+Deno.test("read config", async () => {
+    const config = await loadAppConfig()
     assertExists(config)
     assertExists(config.time)
     assertExists(config.min_temp)
