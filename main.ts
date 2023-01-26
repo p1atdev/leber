@@ -1,49 +1,47 @@
-import { LeberClientOptions, LeberCLient } from "./client.ts"
+import { LeberLoginOptions, LeberCLient } from "./client.ts"
 import { AppConfig } from "./types/mod.ts"
+import { LeberTemperatureQuestion } from "./types/temperatureQuestions.ts"
+import { LeberUser } from "./user.ts"
 import { takeRandom } from "./utils.ts"
 
-export const submitTemperature = async (options: LeberClientOptions, config: AppConfig) => {
-    const client = new LeberCLient(options)
-
-    await client.login()
-
-    const questions = await client.getTemperatureQuestions()
-
-    const answers: number[] = []
-
-    // temperature_selection
-    const temperatures = questions.find((q) => q.que_basic_txt === "temperature_selection")?.options
-    const minId = temperatures?.find((t) => t.answer_text === config.min_temp)?.id
-    const maxId = temperatures?.find((t) => t.answer_text === config.max_temp)?.id
-
-    if (minId && maxId) {
-        answers.push(takeRandom(minId, maxId))
-    } else {
-        throw new Error("Invalid temperature range, maybe not found in the question options")
+export const getAnswerNumbers = (questions: LeberTemperatureQuestion[], answers: string[]) => {
+    if (questions.length < answers.length) {
+        throw new Error("Invalid answers")
     }
 
-    // time
-    const times = questions.find((q) => q.que_basic_txt === "time_selection")?.options
-    const time = times?.find((t) => t.answer_text === config.time)?.id
+    const answerNumbers: number[] = []
 
-    if (time) {
-        answers.push(time)
-    } else {
-        throw new Error("Invalid time, maybe not found in the question options")
+    for (const [i, answer] of answers.entries()) {
+        const question = questions[i]
+        const answerNumber = question.options.find((a) => a.answer_text === answer)?.id
+        if (!answerNumber) {
+            throw new Error("Invalid answer: No answer found")
+        }
+        answerNumbers.push(answerNumber)
     }
 
-    // health check
-    const healths = questions.find((q) => q.que_basic_txt === "health_check")?.options
-    const health = healths?.find((t) => t.answer_text === config.health)?.id
+    return answerNumbers
+}
 
-    if (health) {
-        answers.push(health)
-    } else {
-        throw new Error("Invalid health, maybe not found in the question options")
+export const submitTemperature = async (user: LeberUser, config: AppConfig) => {
+    const client = new LeberCLient()
+
+    const questions = await client.getTemperatureQuestions(user)
+
+    const minTempNum = parseFloat(config.min_temp.replace("°C", ""))
+    const maxTempNum = parseFloat(config.max_temp.replace("°C", ""))
+
+    if (isNaN(minTempNum) || isNaN(maxTempNum)) {
+        throw new Error("Invalid min_temp or max_temp")
     }
+
+    // get random temperature
+    const temp = Math.floor(takeRandom(minTempNum, maxTempNum) * 10) / 10
+
+    const answers: number[] = getAnswerNumbers(questions, [temp.toString(), config.time, config.health])
 
     try {
-        await client.submitTemperatures(answers)
+        await client.submitTemperatures(answers, user)
     } catch (e) {
         console.error(e)
     }

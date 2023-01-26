@@ -2,24 +2,19 @@ import { LeberLogin, LeberResponse, LeberTemperatureQuestion } from "./types/mod
 import { LeberUser } from "./user.ts"
 import { mobileToUser } from "./utils.ts"
 
-export interface LeberClientOptions {
+export interface LeberLoginOptions {
     mobile: string
     password: string
 }
 
 export class LeberCLient {
-    private readonly options: LeberClientOptions
     private readonly host = "https://api.leber11.com"
     private user: LeberUser | null = null
 
-    constructor(options: LeberClientOptions) {
-        this.options = options
-    }
-
-    public login = async () => {
+    public login = async (options: LeberLoginOptions) => {
         const body = {
-            login: mobileToUser(this.options.mobile),
-            password: this.options.password,
+            login: mobileToUser(options.mobile),
+            password: options.password,
         }
 
         const url = new URL("/v9//users/sign_in", this.host)
@@ -34,7 +29,7 @@ export class LeberCLient {
         const json: LeberResponse<LeberLogin> = await res.json()
 
         if (json.status !== 1) {
-            throw new Error(`Login failed. user: ${this.options.mobile}, ${json.message}`)
+            throw new Error(`Login failed. user: ${options.mobile}, ${json.message}`)
         }
 
         this.user = new LeberUser(json.result)
@@ -42,19 +37,20 @@ export class LeberCLient {
         return this.user
     }
 
-    public getTemperatureQuestions = async (languageCode = "ja") => {
-        if (!this.user) {
+    public getTemperatureQuestions = async (user?: LeberUser, languageCode = "ja") => {
+        const session = user || this.user
+        if (!session) {
             throw new Error("Not logged in")
         }
 
         const url = new URL("/v9//temperature_questions", this.host)
         url.searchParams.set("language_code", languageCode)
-        url.searchParams.set("patient_id", this.user.patient_id.toString())
+        url.searchParams.set("patient_id", session.patient_id.toString())
 
         const res = await fetch(url, {
             method: "GET",
             headers: {
-                "X-USER-TOKEN": this.user.authentication_token,
+                "X-USER-TOKEN": session.authentication_token,
             },
         })
 
@@ -67,13 +63,14 @@ export class LeberCLient {
         return json.result
     }
 
-    public submitTemperatures = async (answers: number[]) => {
-        if (!this.user) {
+    public submitTemperatures = async (answers: number[], user?: LeberUser) => {
+        const session = user || this.user
+        if (!session) {
             throw new Error("Not logged in")
         }
 
         const body = {
-            company_id: this.user.company_id,
+            company_id: session.company_id,
             temp_answers_attributes: answers.map((answer, index) => ({
                 additional_comment: "",
                 answer_id: [answer],
@@ -89,7 +86,7 @@ export class LeberCLient {
             body: JSON.stringify(body),
             headers: {
                 "Content-Type": "application/json",
-                "X-USER-TOKEN": this.user.authentication_token,
+                "X-USER-TOKEN": session.authentication_token,
             },
         })
 

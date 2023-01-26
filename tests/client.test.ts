@@ -6,24 +6,26 @@ Deno.test("client login", async () => {
     assertExists(Secret.TEST_USER_MOBILE)
     assertExists(Secret.TEST_USER_PASSWORD)
 
-    const client = new LeberCLient({
-        mobile: Secret.TEST_USER_MOBILE,
-        password: Secret.TEST_USER_PASSWORD,
-    })
+    const client = new LeberCLient()
 
-    assert(await client.login())
+    assert(
+        await client.login({
+            mobile: Secret.TEST_USER_MOBILE,
+            password: Secret.TEST_USER_PASSWORD,
+        })
+    )
 })
 
 Deno.test("get temperature questions", async () => {
     assertExists(Secret.TEST_USER_MOBILE)
     assertExists(Secret.TEST_USER_PASSWORD)
 
-    const client = new LeberCLient({
+    const client = new LeberCLient()
+
+    await client.login({
         mobile: Secret.TEST_USER_MOBILE,
         password: Secret.TEST_USER_PASSWORD,
     })
-
-    await client.login()
 
     const questions = await client.getTemperatureQuestions()
 

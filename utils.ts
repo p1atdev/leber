@@ -5,6 +5,7 @@ export const mobileToUser = (mobile: string, countryCode = 81) => {
     return `+${countryCode}${mobile}`
 }
 
+// 36.2 ~ 36.7
 export const takeRandom = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min
+    return Math.random() * (max - min) + min
 }
