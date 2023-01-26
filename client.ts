@@ -34,7 +34,7 @@ export class LeberCLient {
         const json: LeberResponse<LeberLogin> = await res.json()
 
         if (json.status !== 1) {
-            throw new Error(`Login failed: ${json.message}`)
+            throw new Error(`Login failed. user: ${this.options.mobile}, ${json.message}`)
         }
 
         this.user = new LeberUser(json.result)
