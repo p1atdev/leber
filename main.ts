@@ -1,15 +1,13 @@
 import { LeberClientOptions, LeberCLient } from "./client.ts"
-import { loadAppConfig } from "./config.ts"
+import { AppConfig } from "./types/mod.ts"
 import { takeRandom } from "./utils.ts"
 
-export const submitTemperature = async (options: LeberClientOptions) => {
+export const submitTemperature = async (options: LeberClientOptions, config: AppConfig) => {
     const client = new LeberCLient(options)
 
     await client.login()
 
     const questions = await client.getTemperatureQuestions()
-
-    const config = loadAppConfig()
 
     const answers: number[] = []
 
