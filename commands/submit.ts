@@ -41,7 +41,13 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "Missing temperature",
+                    embeds: [
+                        {
+                            title: "Failed to submit temperature",
+                            description: "Missing temperature",
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
             return
@@ -51,7 +57,13 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "Invalid temperature",
+                    embeds: [
+                        {
+                            title: "Failed to submit temperature",
+                            description: "Invalid temperature",
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
             return
@@ -61,7 +73,13 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "Invalid time",
+                    embeds: [
+                        {
+                            title: "Failed to submit temperature",
+                            description: "Invalid time",
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
             return
@@ -77,7 +95,13 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "You are not logged in!",
+                    embeds: [
+                        {
+                            title: "You are not logged in!",
+                            description: "Please login first",
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
             return
@@ -100,7 +124,22 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: `Successfully submitted your temperature and health status: ${temperature} at ${timeText}`,
+                    embeds: [
+                        {
+                            title: "Successfully submitted your temperature and health status",
+                            fields: [
+                                {
+                                    name: "temperature",
+                                    value: temperature,
+                                },
+                                {
+                                    name: "time",
+                                    value: timeText,
+                                },
+                            ],
+                            color: 0x00ff00,
+                        },
+                    ],
                 },
             })
         } catch (e) {
@@ -108,7 +147,26 @@ const submit: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: `Failed to submit your temperature: ${temperature} at ${timeText}`,
+                    embeds: [
+                        {
+                            title: "Failed to submit your temperature",
+                            fields: [
+                                {
+                                    name: "temperature",
+                                    value: temperature,
+                                },
+                                {
+                                    name: "time",
+                                    value: timeText,
+                                },
+                                {
+                                    name: "error",
+                                    value: e.message,
+                                },
+                            ],
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
         }

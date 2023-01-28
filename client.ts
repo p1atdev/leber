@@ -79,7 +79,7 @@ export class LeberCLient {
             })),
         }
 
-        const url = new URL("	/v9//patients/1237977/submit_temperatures", this.host)
+        const url = new URL(`/v9//patients/${session.patient_id}/submit_temperatures`, this.host)
 
         const res = await fetch(url, {
             method: "POST",

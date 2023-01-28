@@ -1,5 +1,5 @@
 import { LeberCLient } from "../client.ts"
-import { ApplicationCommandOptionTypes, InteractionResponseTypes } from "../deps.ts"
+import { ApplicationCommandOptionTypes, InteractionResponseTypes, Embed } from "../deps.ts"
 import { SlashCommand } from "../types/mod.ts"
 import { WorkersClient } from "../workers.ts"
 
@@ -27,22 +27,35 @@ const login: SlashCommand = {
         const phoneNumber = interaction.data.options?.find((o) => o.name === "phone_number")?.value
         const password = interaction.data.options?.find((o) => o.name === "password")?.value
 
+        await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
+            type: InteractionResponseTypes.DeferredChannelMessageWithSource,
+            data: {
+                flags: 1 << 6,
+            },
+        })
+
         if (!phoneNumber || !password) {
-            await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
-                type: InteractionResponseTypes.ChannelMessageWithSource,
-                data: {
-                    content: "Missing phone number or password",
-                },
+            await bot.helpers.editOriginalInteractionResponse(interaction.token, {
+                embeds: [
+                    {
+                        title: "Failed to login",
+                        description: "Missing phone number or password",
+                        color: 0xff0000,
+                    },
+                ],
             })
             return
         }
 
         if (typeof phoneNumber !== "string" || typeof password !== "string") {
-            await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
-                type: InteractionResponseTypes.ChannelMessageWithSource,
-                data: {
-                    content: "Invalid phone number or password",
-                },
+            await bot.helpers.editOriginalInteractionResponse(interaction.token, {
+                embeds: [
+                    {
+                        title: "Failed to login",
+                        description: "Invalid phone number or password",
+                        color: 0xff0000,
+                    },
+                ],
             })
             return
         }
@@ -55,11 +68,14 @@ const login: SlashCommand = {
                 mobile: phoneNumber,
                 password,
             })
-            await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
-                type: InteractionResponseTypes.ChannelMessageWithSource,
-                data: {
-                    content: "Logged in successfully!",
-                },
+
+            await bot.helpers.editOriginalInteractionResponse(interaction.token, {
+                embeds: [
+                    {
+                        title: "Logged in successfully!",
+                        color: 0x00ff00,
+                    },
+                ],
             })
 
             // save to db
@@ -69,11 +85,14 @@ const login: SlashCommand = {
                 payload: user,
             })
         } catch (_e) {
-            await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
-                type: InteractionResponseTypes.ChannelMessageWithSource,
-                data: {
-                    content: "Failed to login. Invalid phone number or password",
-                },
+            await bot.helpers.editOriginalInteractionResponse(interaction.token, {
+                embeds: [
+                    {
+                        title: "Failed to login",
+                        description: "Invalid phone number or password",
+                        color: 0xff0000,
+                    },
+                ],
             })
         }
     },

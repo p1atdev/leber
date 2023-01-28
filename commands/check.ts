@@ -16,14 +16,33 @@ const check: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "You are logged in!",
+                    embeds: [
+                        {
+                            title: "You are logged in!",
+                            color: 0x00ff00,
+                        },
+                    ],
                 },
             })
         } else {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "You are not logged in!",
+                    embeds: [
+                        {
+                            fields: [
+                                {
+                                    name: "Status",
+                                    value: "Not logged in",
+                                },
+                                {
+                                    name: "Login",
+                                    value: "/login",
+                                },
+                            ],
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
         }

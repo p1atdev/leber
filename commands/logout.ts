@@ -1,5 +1,4 @@
-import { LeberCLient } from "../client.ts"
-import { ApplicationCommandOptionTypes, InteractionResponseTypes } from "../deps.ts"
+import { InteractionResponseTypes } from "../deps.ts"
 import { SlashCommand } from "../types/mod.ts"
 import { WorkersClient } from "../workers.ts"
 
@@ -13,7 +12,12 @@ const logout: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "Logged out successfully!",
+                    embeds: [
+                        {
+                            title: "Logged out successfully!",
+                            color: 0x00ff00,
+                        },
+                    ],
                 },
             })
 
@@ -24,7 +28,13 @@ const logout: SlashCommand = {
             await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
                 type: InteractionResponseTypes.ChannelMessageWithSource,
                 data: {
-                    content: "Failed to logout. Please try again later or contact the developer.",
+                    embeds: [
+                        {
+                            title: "Failed to logout",
+                            description: "Please try again later or contact the developer.",
+                            color: 0xff0000,
+                        },
+                    ],
                 },
             })
         }
