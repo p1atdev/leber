@@ -34,7 +34,7 @@ export const registerCommands = async (
     //     // await bot.helpers.deleteGlobalApplicationCommand(command.id)
     //     // } else {
     //     console.log("command.id", command.id)
-    //     // await bot.helpers.deleteGuildApplicationCommand(command.id, "780053991853129729")
+    //     // await bot.helpers.deleteGuildApplicationCommand(command.id, "")
     //     // }
     // })
 
@@ -58,10 +58,7 @@ export const registerCommands = async (
     await bot.helpers.upsertGlobalApplicationCommands(commands.map((c) => c.command))
     log.info("Commands upserted in global")
     // } else {
-    // await bot.helpers.upsertGuildApplicationCommands(
-    //     "",
-    //     commands.map((c) => c.command)
-    // )
+    // await bot.helpers.upsertGuildApplicationCommands("", [])
 
     // log.info("Registering commands in guild")
     // }
