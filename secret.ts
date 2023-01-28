@@ -7,6 +7,7 @@ export const Secret = {
     TEST_USER_PASSWORD: Deno.env.get("TEST_USER_PASSWORD"),
 
     BOT_TOKEN: Deno.env.get("BOT_TOKEN"),
+    NOTIFY_ID: Deno.env.get("NOTIFY_ID"),
 
     CONFIG_URL: Deno.env.get("CONFIG_URL"),
     WORKERS_URL: Deno.env.get("WORKERS_URL"),
